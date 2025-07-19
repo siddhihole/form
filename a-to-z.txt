@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Character Display</title>
+</head>
+<body onload="startPrinting()">
+  
+  <input type="text" id="userInput" placeholder="Enter Your Character">
+  <button onclick="startPrinting()">GO</button>
+  <div id="output"></div>
+  <div id="missingCharacters"></div>
+  
+  <script>
+    let printedCharacters = new Set();
+    let currentExecution = null;
+
+    function startPrinting() {
+      let userInput = document.getElementById('userInput').value.toUpperCase().trim();
+      
+      if (!userInput) {
+        printAllCharactersWithDelay('A');
+      } else if (/^[A-Z]$/.test(userInput)) {
+        if (currentExecution) {
+          clearInterval(currentExecution);
+        }
+        
+        if(userInput !== 'Z') {
+          printCharactersWithDelay(userInput);
+        } else {
+          findMissingCharacters();
+        }
+      } else {
+        alert('Please enter a valid character from A to Z.');
+      }
+    }
+
+    function printAllCharactersWithDelay(startChar) {
+      let outputDiv = document.getElementById('output');
+      let currentCharCode = startChar.charCodeAt(0);
+      currentExecution = setInterval(() => {
+        if (!printedCharacters.has(String.fromCharCode(currentCharCode))) {
+          outputDiv.innerHTML += String.fromCharCode(currentCharCode) + '<br>';
+          printedCharacters.add(String.fromCharCode(currentCharCode));
+        }
+        if (currentCharCode < 90) {
+          currentCharCode++;
+        } else {
+          clearInterval(currentExecution);
+        }
+      }, 255);
+    }
+   
+    function printCharactersWithDelay(startFrom) {
+      let outputDiv = document.getElementById('output');
+      let currentCharCode = startFrom.charCodeAt(0);
+      currentExecution = setInterval(() => {
+        outputDiv.innerHTML += String.fromCharCode(currentCharCode) + '<br>';
+        printedCharacters.add(String.fromCharCode(currentCharCode));
+        if (currentCharCode < 90) {
+          currentCharCode++;
+        } else {
+          clearInterval(currentExecution);
+          findMissingCharacters();
+        }
+      }, 255);
+    }
+
+    function findMissingCharacters() {
+      let missingCharsSet = new Set();
+
+      for (let charCode = 65; charCode <= 90; charCode++) {
+        if (!printedCharacters.has(String.fromCharCode(charCode))) {
+          missingCharsSet.add(charCode);
+        }
+      }
+
+      let missingCharsArray = Array.from(missingCharsSet);
+      let missingCharsDiv = document.getElementById('missingCharacters');
+      let index = 0;
+
+      currentExecution = setInterval(() => {
+        if (!printedCharacters.has(String.fromCharCode(missingCharsArray[index]))) {
+          missingCharsDiv.innerHTML += String.fromCharCode(missingCharsArray[index]) + '<br>';
+          printedCharacters.add(String.fromCharCode(missingCharsArray[index]));
+        }
+        index++;
+
+        if (index >= missingCharsArray.length) {
+          clearInterval(currentExecution);
+        }
+      }, 255);
+    }
+  </script>
+</body>
+</html>
