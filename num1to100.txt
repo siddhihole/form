@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Number Display</title>
+</head>
+<body onload="startPrinting()">
+  
+  <input type="number" id="userInput" placeholder="Enter Your Number">
+  <button onclick="startPrinting()">GO</button>
+  <div id="output"></div>
+  <div id="missingNumbers"></div>
+  
+  <script>
+    let printedNumbers = new Set();
+    let currentExecution = null;
+
+    function startPrinting() {
+      let userInput = parseInt(document.getElementById('userInput').value);
+      if (!isNaN(userInput)) {
+        if (currentExecution) {
+          clearInterval(currentExecution);
+        }
+        if (userInput >= 100) {
+          findMissingNumbers();
+        }
+        printNumbersWithDelay(userInput);
+      } else {
+        printNumbersWithDelay(1);
+      }
+    }
+
+    function printNumbersWithDelay(startFrom) {
+      let outputDiv = document.getElementById('output');
+      currentExecution = setInterval(() => {
+        if(startFrom<= 100) {
+        if (!printedNumbers.has(startFrom)) { 
+          outputDiv.innerHTML += startFrom + '<br>';
+          printedNumbers.add(startFrom);
+        }
+      }else{
+        clearInterval(currentExecution);
+        if(printedNumbers.size < 100){
+          findMissingNumbers();
+        }
+      }
+      startFrom++;
+    },255)
+  }
+       
+    function findMissingNumbers() {
+      let missingNumbersSet = new Set();
+
+      for (let i = 1; i <= 100; i++) {
+        if (!printedNumbers.has(i) && i !== 100) { 
+          missingNumbersSet.add(i);
+        }
+      }
+
+      let missingNumbersArray = Array.from(missingNumbersSet);
+      let missingNumbersDiv = document.getElementById('missingNumbers');
+      let index = 0;
+
+      currentExecution = setInterval(() => {
+        if (!printedNumbers.has(missingNumbersArray[index])) {
+          missingNumbersDiv.innerHTML += missingNumbersArray[index] + '<br>';
+          printedNumbers.add(missingNumbersArray[index]);
+        }
+        index++;
+
+        if (index >= missingNumbersArray.length) {
+          clearInterval(currentExecution);
+        }
+      }, 255);
+    }
+  </script>
+</body>
+</html>
